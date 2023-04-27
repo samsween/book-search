@@ -4,7 +4,8 @@ import {
   Card,
   Button,
   Row,
-  Col
+  Col,
+  Alert
 } from 'react-bootstrap';
 
 
@@ -17,6 +18,7 @@ import { REMOVE_BOOK } from '../utils/mutations';
 
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
+  const [showError, setShowError] = useState(false);
   const { loading } = useQuery(QUERY_ME, {
     onCompleted: (data) => {
       setUserData({...data.me});
@@ -26,7 +28,6 @@ const SavedBooks = () => {
 
   const handleDeleteBook = async (bookId) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
-    console.log(userData);
     if (!token) {
       return false;
     }
@@ -40,6 +41,7 @@ const SavedBooks = () => {
       removeBookId(bookId);
     } catch (err) {
       console.error(err);
+      setShowError(true);
     }
   };
 
@@ -64,6 +66,9 @@ const SavedBooks = () => {
           <h1>Viewing saved books!</h1>
         </Container>
       </div>
+      {showError || error && <Alert className='mt-5' variant='danger' dismissible >
+         <Alert.Heading>Something went wrong!</Alert.Heading>
+      </Alert>}
       <Container>
         <h2 className='pt-5'>
           {userData.savedBooks.length

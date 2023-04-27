@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Container, Col, Form, Button, Card, Row } from "react-bootstrap";
+import {
+  Container,
+  Col,
+  Form,
+  Button,
+  Card,
+  Row,
+  Alert,
+} from "react-bootstrap";
 
 import Auth from "../utils/auth";
 import { saveBook, searchGoogleBooks } from "../utils/API";
@@ -10,6 +18,7 @@ import { useMutation } from "@apollo/client";
 const SearchBooks = () => {
   // create state for holding returned google api data
   const [searchedBooks, setSearchedBooks] = useState([]);
+  const [showError, setShowError] = useState(false);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState("");
 
@@ -51,7 +60,7 @@ const SearchBooks = () => {
       setSearchedBooks(bookData);
       setSearchInput("");
     } catch (err) {
-      console.error(err);
+      setShowError(true);
     }
   };
 
@@ -65,7 +74,6 @@ const SearchBooks = () => {
     if (!token) {
       return false;
     }
-    console.log(bookToSave);
 
     try {
       await saveBook({
@@ -74,7 +82,7 @@ const SearchBooks = () => {
       // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookId]);
     } catch (err) {
-      console.error(err);
+      setShowError(true);
     }
   };
 
@@ -104,7 +112,7 @@ const SearchBooks = () => {
           </Form>
         </Container>
       </div>
-
+      {showError && <Alert>Something went wrong!</Alert>}
       <Container>
         <h2 className="pt-5">
           {searchedBooks.length
